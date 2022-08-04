@@ -1,0 +1,16 @@
+{
+  "include": ["src"],
+  "exclude": ["**/*.spec.ts"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "es2020",
+    "module": "es2020",
+    "moduleResolution": "node",
+    "strict": true,
+    "declaration": true,
+    "sourceMap": true,
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "resolveJsonModule": true
+  }
+}

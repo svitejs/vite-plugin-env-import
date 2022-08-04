@@ -1,0 +1,60 @@
+{
+  "name": "vite-plugin-env-import-monorepo",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "pnpm --dir packages/vite-plugin-env-import dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r --workspace-concurrency=1 test",
+    "lint": "eslint --ignore-path .gitignore '**/*.{js,ts,html,md}'",
+    "lint:fix": "pnpm run lint --fix",
+    "format": "prettier --ignore-path .gitignore '**/*.{css,scss,html,js,ts,md}' --check",
+    "format:fix": "pnpm run format --write",
+    "fixup": "run-s lint:fix format:fix",
+    "release": "pnpm run build && pnpm changeset publish",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.24.1",
+    "@changesets/get-github-info": "^0.5.1",
+    "@svitejs/changesets-changelog-github-compact": "^0.1.1",
+    "@types/node": "^18.6.3",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
+    "c8": "^7.12.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-markdown": "^3.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "tsup": "^6.2.1",
+    "typescript": "^4.7.4",
+    "vite": "^3.0.4",
+    "vitest": "^0.20.3"
+  },
+  "lint-staged": {
+    "*.{js,ts,html,md}": "eslint --fix",
+    "*.{css,scss,html,js,ts,md}": [
+      "prettier --write"
+    ]
+  },
+  "packageManager": "pnpm@7.8.0",
+  "engines": {
+    "pnpm": "^7.8.0",
+    "yarn": "forbidden, use pnpm",
+    "npm": "forbidden, use pnpm",
+    "node": "^14.18.0 || ^16 || >= 18"
+  },
+  "pnpm": {
+    "overrides": {
+      "@svitejs/vite-plugin-env-import": "workspace:*"
+    }
+  }
+}

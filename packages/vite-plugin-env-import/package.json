@@ -1,0 +1,41 @@
+{
+  "name": "@svitejs/vite-plugin-env-import",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": "dominikg",
+  "private": true,
+  "type": "module",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "tsup-node --watch src",
+    "build": "tsup-node --dts",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "engines": {
+    "node": "^14.18.0 || ^16.0.0 || >=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/svitejs/vite-plugin-env-import.git",
+    "directory": "packages/vite-plugin-env-import"
+  },
+  "bugs": {
+    "url": "https://github.com/svitejs/vite-plugin-env-import/issues"
+  },
+  "homepage": "https://github.com/svitejs/vite-plugin-env-import/tree/main/packages/vite-plugin-env-import#readme",
+  "peerDependencies": {
+    "vite": "^3.0.4"
+  },
+  "devDependencies": {
+    "vite": "^3.0.4",
+    "vitest": "^0.20.3"
+  }
+}
