@@ -67,6 +67,14 @@ module.exports = {
 				node: true,
 				browser: false
 			}
+		},
+		{
+			files: ['packages/playground/kit/**'],
+			rules: {
+				'node/no-missing-import': 'off',
+				'no-unused-vars': 'off',
+				'node/no-unsupported-features/node-builtins': 'off'
+			}
 		}
 	]
 };
