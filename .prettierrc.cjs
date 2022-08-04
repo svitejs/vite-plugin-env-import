@@ -20,6 +20,12 @@ module.exports = {
 				useTabs: false,
 				tabWidth: 2
 			}
+		},
+		{
+			files: 'packages/playground/kit/.svelte-kit/**',
+			options: {
+				requirePragma: true
+			}
 		}
 	]
 };
