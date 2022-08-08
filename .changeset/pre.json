@@ -2,7 +2,10 @@
   "mode": "pre",
   "tag": "next",
   "initialVersions": {
-    "@svitejs/vite-plugin-env-import": "0.0.0"
+    "@svitejs/vite-plugin-env-import": "0.0.0",
+    "ssr-vanilla": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "famous-ravens-do"
+  ]
 }

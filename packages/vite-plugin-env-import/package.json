@@ -1,6 +1,6 @@
 {
   "name": "@svitejs/vite-plugin-env-import",
-  "version": "1.0.0-next.0",
+  "version": "1.0.0-next.1",
   "license": "MIT",
   "author": "dominikg",
   "type": "module",
