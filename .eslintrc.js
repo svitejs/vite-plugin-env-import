@@ -69,7 +69,7 @@ module.exports = {
 			}
 		},
 		{
-			files: ['packages/playground/kit/**'],
+			files: ['playground/ssr-vanilla/**'],
 			rules: {
 				'node/no-missing-import': 'off',
 				'no-unused-vars': 'off',

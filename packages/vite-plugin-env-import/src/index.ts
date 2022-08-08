@@ -1,29 +1,22 @@
 import { Plugin, loadEnv, ResolvedConfig } from 'vite';
+import { is_valid_identifier } from './is-valid-identifier';
 
-export interface Options {
-	// add plugin options here
-	prefix: string;
-}
+const prefix = 'virtual:env';
 
-const DEFAULT_OPTIONS: Options = {
-	// set default values
-	prefix: 'virtual:env'
-};
-
-function isPublic(id: string) {
+function is_public(id: string) {
 	return id.includes(':public');
 }
 
-function isDynamic(id: string) {
-	return id.includes(':dynamic');
+function is_runtime(id: string) {
+	return id.includes(':runtime');
 }
 
-function readEnv(config: ResolvedConfig) {
+function load_env(config: ResolvedConfig) {
 	const { mode, envDir, envPrefix } = config;
 	const prefixes: string[] = Array.isArray(envPrefix) ? envPrefix : [envPrefix ?? 'VITE_'];
 	const hasPublicPrefix = (s: string) => prefixes.some((p: string) => s.startsWith(p));
 	const entries = Object.entries(loadEnv(mode, envDir ?? process.cwd(), '')).filter(([k]) =>
-		isLegalIdenifier(k)
+		is_valid_identifier(k)
 	);
 
 	return {
@@ -32,79 +25,40 @@ function readEnv(config: ResolvedConfig) {
 	};
 }
 
-function createModule(env: Record<string, string>, isDynamic: boolean) {
+function create_module(env: Record<string, string>, is_dynamic: boolean) {
 	return (
 		Object.entries(env)
 			.map(([key, value]) => {
-				return `export const ${key} = ${isDynamic ? `process.env.${key}` : JSON.stringify(value)};`;
+				return `export const ${key} = ${
+					is_dynamic ? `process.env.${key}` : JSON.stringify(value)
+				};`;
 			})
 			.join('\n') + `\n`
 	);
 }
 
-function isLegalIdenifier(key: string) {
-	return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key) && !reserved.has(key);
+function throw_on_illegal_import(id: string, importer: string | undefined, ssr: boolean) {
+	if (!ssr) {
+		if (!is_public(id)) {
+			throw new Error(
+				`Illegal import of private env${
+					importer ? ` in ${importer} ` : ' '
+				}outside of ssr context. You can only import from '${prefix}:public' in clientside code`
+			);
+		} else if (is_runtime(id)) {
+			throw new Error(
+				`Illegal import of runtime env${
+					importer ? ` in ${importer} ` : ' '
+				}outside of ssr context. You can only import from '${id.replace(
+					'\0',
+					''
+				)}' in serverside code`
+			);
+		}
+	}
 }
 
-export const reserved = new Set([
-	'do',
-	'if',
-	'in',
-	'for',
-	'let',
-	'new',
-	'try',
-	'var',
-	'case',
-	'else',
-	'enum',
-	'eval',
-	'null',
-	'this',
-	'true',
-	'void',
-	'with',
-	'await',
-	'break',
-	'catch',
-	'class',
-	'const',
-	'false',
-	'super',
-	'throw',
-	'while',
-	'yield',
-	'delete',
-	'export',
-	'import',
-	'public',
-	'return',
-	'static',
-	'switch',
-	'typeof',
-	'default',
-	'extends',
-	'finally',
-	'package',
-	'private',
-	'continue',
-	'debugger',
-	'function',
-	'arguments',
-	'interface',
-	'protected',
-	'implements',
-	'instanceof'
-]);
-
-export function envImport(inlineOptions?: Partial<Options>): Plugin {
-	// eslint-disable-next-line no-unused-vars
-	const options = {
-		...DEFAULT_OPTIONS,
-		...inlineOptions
-	};
-	const { prefix } = options;
-	const resolvedPrefix = `\0${prefix}`;
+export function envImport(): Plugin {
 	let config: ResolvedConfig;
 	let env: any;
 	return {
@@ -115,31 +69,25 @@ export function envImport(inlineOptions?: Partial<Options>): Plugin {
 			config = _config;
 		},
 
-		resolveId(id, importer, { ssr }) {
+		resolveId(id, importer, options) {
 			if (!id.startsWith(prefix)) {
-				return null;
-			}
-			if (!isPublic(id) && !ssr) {
-				throw new Error(
-					`Illegal import of private env ${id} in ${importer} outside of ssr context`
-				);
-			}
-			return `\0${id}`;
-		},
-		load(id) {
-			if (!id.startsWith(resolvedPrefix)) {
 				return;
 			}
-			if (!env) {
-				env = readEnv(config);
+			throw_on_illegal_import(id, importer, !!options?.ssr);
+			return { id: `\0${id}`, moduleSideEffects: false };
+		},
+
+		load(id, options) {
+			if (!id.startsWith(`\0${prefix}`)) {
+				return;
 			}
-
-			const pub = isPublic(id);
-			const dyn = isDynamic(id);
-
-			const mod = createModule(pub ? env.public : env.private, dyn);
-			console.log({ id, pub, dyn, mod });
-			return mod;
+			throw_on_illegal_import(id, undefined, !!options?.ssr);
+			if (!env) {
+				env = load_env(config);
+			}
+			const pub = is_public(id);
+			const dyn = !!options?.ssr && is_runtime(id);
+			return create_module(pub ? env.public : env.private, dyn);
 		}
 	};
 }

@@ -1,0 +1,8 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@svitejs/vite-plugin-env-import": "0.0.0"
+  },
+  "changesets": []
+}
