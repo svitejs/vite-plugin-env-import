@@ -1,9 +1,8 @@
 {
   "name": "@svitejs/vite-plugin-env-import",
-  "version": "0.0.0",
+  "version": "1.0.0-next.0",
   "license": "MIT",
   "author": "dominikg",
-  "private": true,
   "type": "module",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
